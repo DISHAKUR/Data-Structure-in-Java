@@ -1,0 +1,1219 @@
+{
+  "events": {
+    "ManualEntryA": [
+      {
+        "saveStore": {
+          "key": "enterManaully",
+          "value": true
+        }
+      },
+      {
+        "saveStore": {
+          "key": "enterEirCode",
+          "value": false
+        }
+      }
+    ],
+    "ManualEirCode": [
+      {
+        "saveStore": {
+          "key": "enterEirCode",
+          "value": true
+        }
+      },
+      {
+        "saveStore": {
+          "key": "enterManaully",
+          "value": false
+        }
+      }
+    ],
+    "ManualCustomerEirCode": [
+      {
+        "patchStore": {
+          "key": "enterCustomerEirCode",
+          "value": true
+        }
+      },
+      {
+        "patchStore": {
+          "key": "enterCustomerManaully",
+          "value": false
+        }
+      }
+    ],
+    "ManualCustomerEntry": [
+      {
+        "patchStore": {
+          "key": "enterCustomerEirCode",
+          "value": false
+        }
+      },
+      {
+        "patchStore": {
+          "key": "enterCustomerManaully",
+          "value": true
+        }
+      }
+    ]
+  },
+  "body": {
+    "heading": {
+      "text": "{$var: store.customer.firstName} , {$intl: ADDRESS-LOOKUP.TITLE}"
+    },
+    "navigation": {
+      "previousButton": {
+        "hide": true
+      }
+    },
+    "sections": {
+      "cantFindAddress": {
+        "title": "{$intl: ADDRESS-LOOKUP.MODALS.CANT-FIND-ADDRESS.TITLE}",
+        "icon": "@@apiGatewayUrl/@@product/@@client/assets/images/libertyIreland/libertyIreland-info-header.svg",
+        "showButton": true,
+        "content": [
+          {
+            "type": "unordered-list",
+            "items": [
+              "{$intl: ADDRESS-LOOKUP.MODALS.CANT-FIND-ADDRESS.TEXT.PARAGRAPH-0}",
+              "{$intl: ADDRESS-LOOKUP.MODALS.CANT-FIND-ADDRESS.TEXT.PARAGRAPH-1}",
+              [
+                "{$intl: ADDRESS-LOOKUP.MODALS.CANT-FIND-ADDRESS.TEXT.PARAGRAPH-2:{websiteLink: ?}}",
+                {
+                  "type": "external-link",
+                  "href": "https://finder.eircode.ie/",
+                  "target": "_blank",
+                  "content": "{$intl: ADDRESS-LOOKUP.MODALS.CANT-FIND-ADDRESS.TEXT.EIRCODE-WEBSITE}"
+                }
+              ],
+              [
+                "{$intl: ADDRESS-LOOKUP.MODALS.CANT-FIND-ADDRESS.TEXT.PARAGRAPH-3:{phoneNumber: ?}}",
+                {
+                  "type": "external-link",
+                  "href": "tel:+35315534040",
+                  "className": "text-nowrap",
+                  "content": "01 553 4040"
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "forms": {
+      "questions:address": [
+        {
+          "fieldGroup": [
+            "{$if: store.enterManaully !== true}",
+            "{$if: store.enterEirCode !== true}",
+            {
+              "key": "address",
+              "type": "address-lookup",
+              "resetOnHide":true,
+              "templateOptions": {
+                "endpoints": {
+                  "autocomplete": "@@nginxPrefix/geo/autocomplete",
+                  "findaddress": "@@nginxPrefix/ie/geo/address"
+                },
+                "additionalHeaders": {
+                  "x-api-key": "@@xApiKey"
+                },
+                "placeholder": "{$intl: ADDRESS-LOOKUP.INPUTS.ADDRESS.PLACEHOLDER}",
+                "required": true,
+                "noFloatingLabel": true,
+                "hideRequiredMarker": true,
+                "addressLookupIcon": "@@apiGatewayUrl/@@product/@@client/assets/images/icons/liberty-icons-address.svg",
+                "noResultsMessage": [
+                  "{$intl: ADDRESS-LOOKUP.TEXT.NO-RESULTS}"
+                ],
+                "tooManyResultsMessage": [
+                  "{$intl: ADDRESS-LOOKUP.TEXT.TOO-MANY-RESULTS}"
+                ],
+                "serviceNotRespondingMessage": [
+                  "{$intl: ADDRESS-LOOKUP.TEXT.ADDRESS-SERVICE-NOT-RESPONDING}",
+                  {
+                    "type": "external-link",
+                    "href": "tel:+35315534040",
+                    "className": "text-nowrap",
+                    "content": "01 553 4040"
+                  }
+                ],
+                "tooltip": {
+                  "iconUrl": "@@apiGatewayUrl/@@product/@@client/assets/images/icons/helptext-icon.svg",
+                  "iconAlt": "{$intl: ADD-CLAIMS.CLAIM-STATUS.TOOLTIP.ALT}",
+                  "content": [
+                    "{$intl: ADDRESS-LOOKUP.INFO-BOXES.ADDRESS-NOTE:{exerciseRights: ?, dataProcessing: ?}}",
+                    {
+                      "type": "external-link",
+                      "className": "underline",
+                      "href": "{$intl: ADDRESS-LOOKUP.LINKS.EXCERCISE-RIGHTS.VALUE}",
+                      "content": "{$intl: ADDRESS-LOOKUP.LINKS.EXCERCISE-RIGHTS.TEXT}",
+                      "target": "_blank"
+                    },
+                    {
+                      "type": "external-link",
+                      "className": "underline",
+                      "href": "{$intl: ADDRESS-LOOKUP.LINKS.PROCESSING-DATA.VALUE}",
+                      "content": "{$intl: ADDRESS-LOOKUP.LINKS.PROCESSING-DATA.TEXT}",
+                      "target": "_blank"
+                    }
+                  ]
+                }
+              },
+              "validation": {
+                "messages": {
+                  "required": "{$intl: ADDRESS-LOOKUP.VALIDATION.REQUIRED-ADDRESS}",
+                  "invalidAddress": [
+                    {
+                      "type": "paragraph",
+                      "className": "mb-0",
+                      "content": [
+                        {
+                          "type": "text",
+                          "content": "{$intl: ADDRESS-LOOKUP.VALIDATION.NOT-FOUND-ADDRESS}"
+                        },
+                        {
+                          "type": "text",
+                          "content": "{$intl: ADDRESS-LOOKUP.VALIDATION.NOT-FOUND-ADDRESS-AFTER-TEXT}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "validators": {
+                "validation": [
+                  "valid-address"
+                ]
+              },
+              "expressionProperties": {
+                "templateOptions.tooManyResultsMessage.1": "' (' + field.templateOptions.foundTooManyResultsNumber + ') '"
+              }
+            },
+            "{$if: store.enterEirCode === true}",
+            {
+              "key": "eircodeOnly",
+              "type": "address-lookup",
+               "resetOnHide":true,
+              "templateOptions": {
+                "endpoints": {
+                  "autocomplete": "@@nginxPrefix/geo/autocomplete",
+                  "findaddress": "@@nginxPrefix/ie/geo/address"
+                },
+                "additionalHeaders": {
+                  "x-api-key": "@@xApiKey"
+                },
+                "placeholder": "{$intl: ADDRESS-LOOKUP.INPUTS.ADDRESS.PLACEHOLDER}",
+                "required": true,
+                "noFloatingLabel": true,
+                "hideRequiredMarker": true,
+                "addressLookupIcon": "@@apiGatewayUrl/@@product/@@client/assets/images/icons/liberty-icons-address.svg",
+                "noResultsMessage": [
+                  "{$intl: ADDRESS-LOOKUP.TEXT.NO-RESULTS}"
+                ],
+                "tooManyResultsMessage": [
+                  "{$intl: ADDRESS-LOOKUP.TEXT.TOO-MANY-RESULTS}"
+                ],
+                "serviceNotRespondingMessage": [
+                  "{$intl: ADDRESS-LOOKUP.TEXT.ADDRESS-SERVICE-NOT-RESPONDING}",
+                  {
+                    "type": "external-link",
+                    "href": "tel:+35315534040",
+                    "className": "text-nowrap",
+                    "content": "01 553 4040"
+                  }
+                ],
+                "tooltip": {
+                  "iconUrl": "@@apiGatewayUrl/@@product/@@client/assets/images/icons/helptext-icon.svg",
+                  "iconAlt": "{$intl: ADD-CLAIMS.CLAIM-STATUS.TOOLTIP.ALT}",
+                  "content": [
+                    "{$intl: ADDRESS-LOOKUP.INFO-BOXES.ADDRESS-NOTE:{exerciseRights: ?, dataProcessing: ?}}",
+                    {
+                      "type": "external-link",
+                      "className": "underline",
+                      "href": "{$intl: ADDRESS-LOOKUP.LINKS.EXCERCISE-RIGHTS.VALUE}",
+                      "content": "{$intl: ADDRESS-LOOKUP.LINKS.EXCERCISE-RIGHTS.TEXT}",
+                      "target": "_blank"
+                    },
+                    {
+                      "type": "external-link",
+                      "className": "underline",
+                      "href": "{$intl: ADDRESS-LOOKUP.LINKS.PROCESSING-DATA.VALUE}",
+                      "content": "{$intl: ADDRESS-LOOKUP.LINKS.PROCESSING-DATA.TEXT}",
+                      "target": "_blank"
+                    }
+                  ]
+                }
+              },
+              "validation": {
+                "messages": {
+                  "required": "{$intl: ADDRESS-LOOKUP.VALIDATION.REQUIRED-ADDRESS}",
+                  "invalidAddress": [
+                    {
+                      "type": "paragraph",
+                      "className": "mb-0",
+                      "content": [
+                        {
+                          "type": "text",
+                          "content": "{$intl: ADDRESS-LOOKUP.VALIDATION.NOT-FOUND-ADDRESS}"
+                        },
+                        {
+                          "type": "text",
+                          "content": "{$intl: ADDRESS-LOOKUP.VALIDATION.NOT-FOUND-ADDRESS-AFTER-TEXT}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "validators": {
+                "validation": [
+                  "valid-address"
+                ]
+              },
+              "expressionProperties": {
+                "templateOptions.tooManyResultsMessage.1": "' (' + field.templateOptions.foundTooManyResultsNumber + ') '"
+              }
+            },
+            "{$if: store.enterManaully === true}",
+            {
+              "key": "address",
+              "wrappers": [
+                "address-lookup"
+              ],
+              "fieldGroup": [
+                {
+                  "key": "addressLine1",
+                   "resetOnHide":true,
+                  "type": "input",
+                  "templateOptions": {
+                    "label": "{$intl: MANUAL-ADDRESS.INPUTS.ADDRESS-LINE-1.PLACEHOLDER}",
+                    "required": true,
+                    "hideRequiredMarker": true,
+                    "maxLength": 100
+                  },
+                  "validators": {
+                    "validation": [
+                      "no-whitespace-required",
+                      "max-length"
+                    ]
+                  },
+                  "validation": {
+                    "messages": {
+                      "required": "{$intl: MANUAL-ADDRESS.VALIDATION.REQUIRED-ADDRESS-LINE-1}",
+                      "maxlength": "{$intl: MANUAL-ADDRESS.VALIDATION.LENGTH-ADDRESS-LINE-1}"
+                    }
+                  }
+                },
+                {
+                  "key": "addressLine2",
+                   "resetOnHide":true,
+                  "type": "input",
+                  "templateOptions": {
+                    "label": "{$intl: MANUAL-ADDRESS.INPUTS.ADDRESS-LINE-2.PLACEHOLDER}",
+                    "maxLength": 100
+                  },
+                  "validators": {
+                    "validation": [
+                      "max-length"
+                    ]
+                  },
+                  "validation": {
+                    "messages": {
+                      "maxlength": "{$intl: MANUAL-ADDRESS.VALIDATION.LENGTH-ADDRESS-LINE-2}"
+                    }
+                  }
+                },
+                {
+                  "key": "city",
+                  "type": "input",
+                   "resetOnHide":true,
+                  "templateOptions": {
+                    "label": "{$intl: MANUAL-ADDRESS.INPUTS.CITY.PLACEHOLDER}",
+                    "required": true,
+                    "hideRequiredMarker": true,
+                    "maxLength": 76
+                  },
+                  "validators": {
+                    "validation": [
+                      "no-whitespace-required",
+                      "max-length"
+                    ]
+                  },
+                  "validation": {
+                    "messages": {
+                      "required": "{$intl: MANUAL-ADDRESS.VALIDATION.REQUIRED-CITY}",
+                      "maxlength": "{$intl: MANUAL-ADDRESS.VALIDATION.LENGTH-CITY}"
+                    }
+                  }
+                },
+                {
+                  "key": "countyCode",
+                   "resetOnHide":true,
+                  "type": "select",
+                  "templateOptions": {
+                    "label": "{$intl: MANUAL-ADDRESS.INPUTS.COUNTY.PLACEHOLDER}",
+                    "required": true,
+                    "hideRequiredMarker": true,
+                    "options": [
+                      {
+                        "label": "County Carlow",
+                        "value": "CW0"
+                      },
+                      {
+                        "label": "County Cavan",
+                        "value": "CN0"
+                      },
+                      {
+                        "label": "County Clare",
+                        "value": "CE0"
+                      },
+                      {
+                        "label": "County Cork",
+                        "value": "CX1"
+                      },
+                      {
+                        "label": "Cork City",
+                        "value": "CX0"
+                      },
+                      {
+                        "label": "County Donegal",
+                        "value": "DL0"
+                      },
+                      {
+                        "label": "County Dublin North",
+                        "value": "DX25"
+                      },
+                      {
+                        "label": "County Dublin South",
+                        "value": "DX26"
+                      },
+                      {
+                        "label": "Dublin 1",
+                        "value": "DX1"
+                      },
+                      {
+                        "label": "Dublin 2",
+                        "value": "DX2"
+                      },
+                      {
+                        "label": "Dublin 3",
+                        "value": "DX3"
+                      },
+                      {
+                        "label": "Dublin 4",
+                        "value": "DX4"
+                      },
+                      {
+                        "label": "Dublin 5",
+                        "value": "DX5"
+                      },
+                      {
+                        "label": "Dublin 6",
+                        "value": "DX6"
+                      },
+                      {
+                        "label": "Dublin 7",
+                        "value": "DX7"
+                      },
+                      {
+                        "label": "Dublin 8",
+                        "value": "DX8"
+                      },
+                      {
+                        "label": "Dublin 9",
+                        "value": "DX9"
+                      },
+                      {
+                        "label": "Dublin 10",
+                        "value": "DX10"
+                      },
+                      {
+                        "label": "Dublin 11",
+                        "value": "DX11"
+                      },
+                      {
+                        "label": "Dublin 12",
+                        "value": "DX12"
+                      },
+                      {
+                        "label": "Dublin 13",
+                        "value": "DX13"
+                      },
+                      {
+                        "label": "Dublin 14",
+                        "value": "DX14"
+                      },
+                      {
+                        "label": "Dublin 15",
+                        "value": "DX15"
+                      },
+                      {
+                        "label": "Dublin 16",
+                        "value": "DX16"
+                      },
+                      {
+                        "label": "Dublin 17",
+                        "value": "DX17"
+                      },
+                      {
+                        "label": "Dublin 18",
+                        "value": "DX18"
+                      },
+                      {
+                        "label": "Dublin 20",
+                        "value": "DX20"
+                      },
+                      {
+                        "label": "Dublin 22",
+                        "value": "DX22"
+                      },
+                      {
+                        "label": "Dublin 24",
+                        "value": "DX24"
+                      },
+                      {
+                        "label": "County Galway",
+                        "value": "GX1"
+                      },
+                      {
+                        "label": "Galway City",
+                        "value": "GX0"
+                      },
+                      {
+                        "label": "County Kerry",
+                        "value": "KY0"
+                      },
+                      {
+                        "label": "County Kildare",
+                        "value": "KE0"
+                      },
+                      {
+                        "label": "County Kilkenny",
+                        "value": "KK0"
+                      },
+                      {
+                        "label": "County Laois",
+                        "value": "LS0"
+                      },
+                      {
+                        "label": "County Leitrim",
+                        "value": "LM0"
+                      },
+                      {
+                        "label": "County Limerick",
+                        "value": "LK1"
+                      },
+                      {
+                        "label": "Limerick City",
+                        "value": "LK0"
+                      },
+                      {
+                        "label": "County Longford",
+                        "value": "LD0"
+                      },
+                      {
+                        "label": "County Louth",
+                        "value": "LH0"
+                      },
+                      {
+                        "label": "County Mayo",
+                        "value": "MO0"
+                      },
+                      {
+                        "label": "County Meath",
+                        "value": "MH0"
+                      },
+                      {
+                        "label": "County Monaghan",
+                        "value": "MN0"
+                      },
+                      {
+                        "label": "County Offaly",
+                        "value": "OY0"
+                      },
+                      {
+                        "label": "County Roscommon",
+                        "value": "RN0"
+                      },
+                      {
+                        "label": "County Sligo",
+                        "value": "SO0"
+                      },
+                      {
+                        "label": "Sligo Town",
+                        "value": "SO1"
+                      },
+                      {
+                        "label": "County Tipperary",
+                        "value": "TP0"
+                      },
+                      {
+                        "label": "County Waterford",
+                        "value": "WD1"
+                      },
+                      {
+                        "label": "Waterford City",
+                        "value": "WD0"
+                      },
+                      {
+                        "label": "County Westmeath",
+                        "value": "WH0"
+                      },
+                      {
+                        "label": "County Wexford",
+                        "value": "WX0"
+                      },
+                      {
+                        "label": "County Wicklow",
+                        "value": "WW0"
+                      }
+                    ]
+                  },
+                  "validation": {
+                    "messages": {
+                      "required": "{$intl: MANUAL-ADDRESS.VALIDATION.REQUIRED-COUNTY}"
+                    }
+                  }
+                },
+                {
+                  "key": "eircode",
+                   "resetOnHide":true,
+                  "type": "input",
+                  "templateOptions": {
+                    "label": "{$intl: MANUAL-ADDRESS.INPUTS.EIRCODE.PLACEHOLDER}",
+                    "pattern": "(?:^[AC-FHKNPRTV-Yac-fhknprtv-y][0-9]{2}|[Dd]6[Ww])[ -]?[0-9AC-FHKNPRTV-Yac-fhknprtv-y]{4}$"
+                  },
+                  "validation": {
+                    "messages": {
+                      "pattern": "{$intl: MANUAL-ADDRESS.VALIDATION.PATTERN-EIRCODE}"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "key": "samePostalAddress",
+              "type": "select-buttons-attached",
+              "templateOptions": {
+                "label": "{$intl:  ADDRESS-LOOKUP.TEXT.HAS-SAME-POSTAL-ADDRESS}",
+                "hideRequiredMarker": true,
+                "alignCenter": true,
+                "required": true,
+                "options": [
+                  {
+                    "label": "{$intl:  ADDRESS-LOOKUP.BUTTONS.YES}",
+                    "value": true
+                  },
+                  {
+                    "label": "{$intl:  ADDRESS-LOOKUP.BUTTONS.NO}",
+                    "value": false
+                  }
+                ]
+              },
+              "validation": {
+                "messages": {
+                  "required": "{$intl:  ADDRESS-LOOKUP.VALIDATION.REQUIRED-POSTAL-ADDRESS-ANS}"
+                }
+              }
+            },
+            "{$if: store.enterManaully !== true}",
+            {
+              "content": [
+                {
+                  "type": "div",
+                  "className": "mb-0 mt-2 information-text",
+                  "content": [
+                    {
+                      "type": "text",
+                      "content": "{$intl: ADDRESS-LOOKUP.TEXT.ENTER-ADDRESS-MANUALLY-PRE-TEXT}"
+                    },
+                    {
+                      "className": "underline",
+                      "type": "page-event-button",
+                      "event": "ManualEntryA",
+                      "content": [
+                        "{$intl: ADDRESS-LOOKUP.TEXT.ENTER-ADDRESS-MANUALLY-TEXT}",
+                        {
+                          "type": "image",
+                          "className": "icon-image-sm lm-info-color-filter ml-1",
+                          "src": "@@apiGatewayUrl/@@product/@@client/assets/images/icons/arrow-circle-right-light.svg"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "{$if: store.enterManaully === true}",
+            "{$if: store.enterEirCode === false}",
+            {
+              "content": [
+                {
+                  "type": "div",
+                  "className": "mb-0 mt-2 information-text",
+                  "content": [
+                    {
+                      "type": "text",
+                      "content": "{$intl: ADDRESS-LOOKUP.TEXT.ENTER-EIRCODE-MANUALLY-PRE-TEXT}"
+                    },
+                    {
+                      "className": "data-notice-confirmation",
+                      "type": "page-event-button",
+                      "event": "ManualEirCode",
+                      "content": [
+                        "{$intl: ADDRESS-LOOKUP.TEXT.ENTER-EIRCODE-MANUALLY-TEXT}",
+                        {
+                          "type": "image",
+                          "className": "icon-image-sm lm-info-color-filter ml-1",
+                          "src": "@@apiGatewayUrl/@@product/@@client/assets/images/icons/arrow-circle-right-light.svg"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+             "{$if: store.enterCustomerManaully !== true}",
+            "{$if: store.enterCustomerEirCode !== true}",
+            {
+              "key": "customerAddress",
+              "type": "address-lookup",
+               "resetOnHide":true,
+              "hideExpression": "model.samePostalAddress !== false",
+              "templateOptions": {
+                "endpoints": {
+                  "autocomplete": "@@nginxPrefix/geo/autocomplete",
+                  "findaddress": "@@nginxPrefix/ie/geo/address"
+                },
+                "additionalHeaders": {
+                  "x-api-key": "@@xApiKey"
+                },
+                "placeholder": "{$intl: CUSTOMER-ADDRESS-LOOKUP.TEXT.ENTER-NEW-POSTAL-ADDRESS}",
+                "required": true,
+                "noFloatingLabel": true,
+                "hideRequiredMarker": true,
+                "label": "{$intl: CUSTOMER-ADDRESS-LOOKUP.TEXT.ENTER-NEW-POSTAL-ADDRESS}",
+                "addressLookupIcon": "@@apiGatewayUrl/@@product/@@client/assets/images/icons/liberty-icons-address.svg",
+                "noResultsMessage": [
+                  "{$intl: CUSTOMER-ADDRESS-LOOKUP.TEXT.NO-RESULTS}"
+                ],
+                "tooManyResultsMessage": [
+                  "{$intl: CUSTOMER-ADDRESS-LOOKUP.TEXT.TOO-MANY-RESULTS}"
+                ],
+                "serviceNotRespondingMessage": [
+                  "{$intl: CUSTOMER-ADDRESS-LOOKUP.TEXT.ADDRESS-SERVICE-NOT-RESPONDING}",
+                  {
+                    "type": "external-link",
+                    "href": "tel:+35315534040",
+                    "className": "text-nowrap",
+                    "content": "01 553 4040"
+                  }
+                ]
+              },
+              "validation": {
+                "messages": {
+                  "required": "{$intl: CUSTOMER-ADDRESS-LOOKUP.VALIDATION.REQUIRED-ADDRESS}",
+                  "invalidAddress": [
+                    {
+                      "type": "paragraph",
+                      "className": "mb-0",
+                      "content": [
+                        {
+                          "type": "text",
+                          "content": "{$intl: CUSTOMER-ADDRESS-LOOKUP.VALIDATION.NOT-FOUND-ADDRESS}"
+                        },
+                        {
+                          "type": "page-event-button",
+                          "event": "ManualEntryA",
+                          "content": [
+                            "{$intl: CUSTOMER-ADDRESS-LOOKUP.TEXT.ENTER-ADDRESS-MANUALLY-TEXT-LOWER-CASE}"
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "content": "{$intl: CUSTOMER-ADDRESS-LOOKUP.VALIDATION.NOT-FOUND-ADDRESS-AFTER-TEXT}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "validators": {
+                "validation": [
+                  "valid-address"
+                ]
+              },
+              "expressionProperties": {
+                "templateOptions.tooManyResultsMessage.1": "' (' + field.templateOptions.foundTooManyResultsNumber + ') '"
+              }
+            },
+             "{$if: store.enterCustomerEirCode === true}",
+             {
+              "key": "customerEirOnly",
+              "type": "address-lookup",
+               "resetOnHide":true,
+              "hideExpression": "model.samePostalAddress !== false",
+              "templateOptions": {
+                "endpoints": {
+                  "autocomplete": "@@nginxPrefix/geo/autocomplete",
+                  "findaddress": "@@nginxPrefix/ie/geo/address"
+                },
+                "additionalHeaders": {
+                  "x-api-key": "@@xApiKey"
+                },
+                "placeholder": "{$intl: CUSTOMER-ADDRESS-LOOKUP.TEXT.ENTER-NEW-POSTAL-ADDRESS}",
+                "required": true,
+                "noFloatingLabel": true,
+                "hideRequiredMarker": true,
+                "label": "{$intl: CUSTOMER-ADDRESS-LOOKUP.TEXT.ENTER-NEW-POSTAL-ADDRESS}",
+                "addressLookupIcon": "@@apiGatewayUrl/@@product/@@client/assets/images/icons/liberty-icons-address.svg",
+                "noResultsMessage": [
+                  "{$intl: CUSTOMER-ADDRESS-LOOKUP.TEXT.NO-RESULTS}"
+                ],
+                "tooManyResultsMessage": [
+                  "{$intl: CUSTOMER-ADDRESS-LOOKUP.TEXT.TOO-MANY-RESULTS}"
+                ],
+                "serviceNotRespondingMessage": [
+                  "{$intl: CUSTOMER-ADDRESS-LOOKUP.TEXT.ADDRESS-SERVICE-NOT-RESPONDING}",
+                  {
+                    "type": "external-link",
+                    "href": "tel:+35315534040",
+                    "className": "text-nowrap",
+                    "content": "01 553 4040"
+                  }
+                ]
+              },
+              "validation": {
+                "messages": {
+                  "required": "{$intl: CUSTOMER-ADDRESS-LOOKUP.VALIDATION.REQUIRED-ADDRESS}",
+                  "invalidAddress": [
+                    {
+                      "type": "paragraph",
+                      "className": "mb-0",
+                      "content": [
+                        {
+                          "type": "text",
+                          "content": "{$intl: CUSTOMER-ADDRESS-LOOKUP.VALIDATION.NOT-FOUND-ADDRESS}"
+                        },
+                        {
+                          "type": "page-event-button",
+                          "event": "ManualEntryA",
+                          "content": [
+                            "{$intl: CUSTOMER-ADDRESS-LOOKUP.TEXT.ENTER-ADDRESS-MANUALLY-TEXT-LOWER-CASE}"
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "content": "{$intl: CUSTOMER-ADDRESS-LOOKUP.VALIDATION.NOT-FOUND-ADDRESS-AFTER-TEXT}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "validators": {
+                "validation": [
+                  "valid-address"
+                ]
+              },
+              "expressionProperties": {
+                "templateOptions.tooManyResultsMessage.1": "' (' + field.templateOptions.foundTooManyResultsNumber + ') '"
+              }
+            },
+              "{$if: store.enterCustomerManaully === true}",
+              {
+          "key": "customerAddress",
+          "templateOptions": {
+            "addressSaveTo": "customerAddress"
+          },
+          "fieldGroup": [
+            {
+              "key": "addressLine1",
+              "type": "input",
+              "templateOptions": {
+                "label": "{$intl: CUSTOMER-MANUAL-ADDRESS.INPUTS.ADDRESS-LINE-1.PLACEHOLDER}",
+                "required": true,
+                "hideRequiredMarker": true,
+                "maxLength": 101
+              },
+              "validators": {
+                "validation": ["no-whitespace-required", "max-length"]
+              },
+              "validation": {
+                "messages": {
+                  "required": "{$intl: CUSTOMER-MANUAL-ADDRESS.VALIDATION.REQUIRED-ADDRESS-LINE-1}",
+                  "maxlength": "{$intl: CUSTOMER-MANUAL-ADDRESS.VALIDATION.LENGTH-ADDRESS-LINE-1}"
+                }
+              }
+            },
+            {
+              "key": "addressLine2",
+              "type": "input",
+              "templateOptions": {
+                "label": "{$intl: CUSTOMER-MANUAL-ADDRESS.INPUTS.ADDRESS-LINE-2.PLACEHOLDER}",
+                "maxLength": 101
+              },
+              "validators": {
+                "validation": ["max-length"]
+              },
+              "validation": {
+                "messages": {
+                  "maxlength": "{$intl: CUSTOMER-MANUAL-ADDRESS.VALIDATION.LENGTH-ADDRESS-LINE-2}"
+                }
+              }
+            },
+            {
+              "key": "city",
+              "type": "input",
+              "templateOptions": {
+                "label": "{$intl: CUSTOMER-MANUAL-ADDRESS.INPUTS.CITY.PLACEHOLDER}",
+                "required": true,
+                "hideRequiredMarker": true,
+                "maxLength": 76
+              },
+              "validators": {
+                "validation": ["no-whitespace-required", "max-length"]
+              },
+              "validation": {
+                "messages": {
+                  "required": "{$intl: CUSTOMER-MANUAL-ADDRESS.VALIDATION.REQUIRED-CITY}",
+                  "maxlength": "{$intl: CUSTOMER-MANUAL-ADDRESS.VALIDATION.LENGTH-CITY}"
+                }
+              }
+            },
+            {
+              "key": "countyCode",
+              "type": "select",
+              "templateOptions": {
+                "label": "{$intl: CUSTOMER-MANUAL-ADDRESS.INPUTS.COUNTY.PLACEHOLDER}",
+                "required": true,
+                "hideRequiredMarker": true,
+                "options": [
+                  {
+                    "label": "County Carlow",
+                    "value": "CW0"
+                  },
+                  {
+                    "label": "County Cavan",
+                    "value": "CN0"
+                  },
+                  {
+                    "label": "County Clare",
+                    "value": "CE0"
+                  },
+                  {
+                    "label": "County Cork",
+                    "value": "CX1"
+                  },
+                  {
+                    "label": "Cork City",
+                    "value": "CX0"
+                  },
+                  {
+                    "label": "County Donegal",
+                    "value": "DL0"
+                  },
+                  {
+                    "label": "County Dublin North",
+                    "value": "DX25"
+                  },
+                  {
+                    "label": "County Dublin South",
+                    "value": "DX26"
+                  },
+                  {
+                    "label": "Dublin 1",
+                    "value": "DX1"
+                  },
+                  {
+                    "label": "Dublin 2",
+                    "value": "DX2"
+                  },
+                  {
+                    "label": "Dublin 3",
+                    "value": "DX3"
+                  },
+                  {
+                    "label": "Dublin 4",
+                    "value": "DX4"
+                  },
+                  {
+                    "label": "Dublin 5",
+                    "value": "DX5"
+                  },
+                  {
+                    "label": "Dublin 6",
+                    "value": "DX6"
+                  },
+                  {
+                    "label": "Dublin 7",
+                    "value": "DX7"
+                  },
+                  {
+                    "label": "Dublin 8",
+                    "value": "DX8"
+                  },
+                  {
+                    "label": "Dublin 9",
+                    "value": "DX9"
+                  },
+                  {
+                    "label": "Dublin 10",
+                    "value": "DX10"
+                  },
+                  {
+                    "label": "Dublin 11",
+                    "value": "DX11"
+                  },
+                  {
+                    "label": "Dublin 12",
+                    "value": "DX12"
+                  },
+                  {
+                    "label": "Dublin 13",
+                    "value": "DX13"
+                  },
+                  {
+                    "label": "Dublin 14",
+                    "value": "DX14"
+                  },
+                  {
+                    "label": "Dublin 15",
+                    "value": "DX15"
+                  },
+                  {
+                    "label": "Dublin 16",
+                    "value": "DX16"
+                  },
+                  {
+                    "label": "Dublin 17",
+                    "value": "DX17"
+                  },
+                  {
+                    "label": "Dublin 18",
+                    "value": "DX18"
+                  },
+                  {
+                    "label": "Dublin 20",
+                    "value": "DX20"
+                  },
+                  {
+                    "label": "Dublin 22",
+                    "value": "DX22"
+                  },
+                  {
+                    "label": "Dublin 24",
+                    "value": "DX24"
+                  },
+                  {
+                    "label": "County Galway",
+                    "value": "GX1"
+                  },
+                  {
+                    "label": "Galway City",
+                    "value": "GX0"
+                  },
+                  {
+                    "label": "County Kerry",
+                    "value": "KY0"
+                  },
+                  {
+                    "label": "County Kildare",
+                    "value": "KE0"
+                  },
+                  {
+                    "label": "County Kilkenny",
+                    "value": "KK0"
+                  },
+                  {
+                    "label": "County Laois",
+                    "value": "LS0"
+                  },
+                  {
+                    "label": "County Leitrim",
+                    "value": "LM0"
+                  },
+                  {
+                    "label": "County Limerick",
+                    "value": "LK1"
+                  },
+                  {
+                    "label": "Limerick City",
+                    "value": "LK0"
+                  },
+                  {
+                    "label": "County Longford",
+                    "value": "LD0"
+                  },
+                  {
+                    "label": "County Louth",
+                    "value": "LH0"
+                  },
+                  {
+                    "label": "County Mayo",
+                    "value": "MO0"
+                  },
+                  {
+                    "label": "County Meath",
+                    "value": "MH0"
+                  },
+                  {
+                    "label": "County Monaghan",
+                    "value": "MN0"
+                  },
+                  {
+                    "label": "County Offaly",
+                    "value": "OY0"
+                  },
+                  {
+                    "label": "County Roscommon",
+                    "value": "RN0"
+                  },
+                  {
+                    "label": "County Sligo",
+                    "value": "SO0"
+                  },
+                  {
+                    "label": "Sligo Town",
+                    "value": "SO1"
+                  },
+                  {
+                    "label": "County Tipperary",
+                    "value": "TP0"
+                  },
+                  {
+                    "label": "County Waterford",
+                    "value": "WD1"
+                  },
+                  {
+                    "label": "Waterford City",
+                    "value": "WD0"
+                  },
+                  {
+                    "label": "County Westmeath",
+                    "value": "WH0"
+                  },
+                  {
+                    "label": "County Wexford",
+                    "value": "WX0"
+                  },
+                  {
+                    "label": "County Wicklow",
+                    "value": "WW0"
+                  }
+                ]
+              },
+              "validation": {
+                "messages": {
+                  "required": "{$intl: CUSTOMER-MANUAL-ADDRESS.VALIDATION.REQUIRED-COUNTY}"
+                }
+              }
+            },
+            {
+              "key": "eircode",
+              "type": "input",
+              "templateOptions": {
+                "label": "{$intl: CUSTOMER-MANUAL-ADDRESS.INPUTS.EIRCODE.PLACEHOLDER}",
+                "pattern": "(?:^[AC-FHKNPRTV-Yac-fhknprtv-y][0-9]{2}|[Dd]6[Ww])[ -]?[0-9AC-FHKNPRTV-Yac-fhknprtv-y]{4}$",
+                "tooltip": {
+                  "iconUrl": "@@apiGatewayUrl/@@product/@@client/assets/images/icons/helptext-icon.svg",
+                  "iconAlt": "{$intl: ADD-CLAIMS.CLAIM-STATUS.TOOLTIP.ALT}",
+                  "content": [
+                    "{$intl: CUSTOMER-MANUAL-ADDRESS.INFO-BOXES.ADDRESS-NOTE:{exerciseRights: ?, dataProcessing: ?}}",
+                    {
+                      "type": "external-link",
+                      "className": "underline",
+                      "href": "{$intl: CUSTOMER-MANUAL-ADDRESS.LINKS.EXCERCISE-RIGHTS.VALUE}",
+                      "content": "{$intl: CUSTOMER-MANUAL-ADDRESS.LINKS.EXCERCISE-RIGHTS.TEXT}",
+                      "target": "_blank"
+                    },
+                    {
+                      "type": "external-link",
+                      "className": "underline",
+                      "href": "{$intl: CUSTOMER-MANUAL-ADDRESS.LINKS.PROCESSING-DATA.VALUE}",
+                      "content": "{$intl: CUSTOMER-MANUAL-ADDRESS.LINKS.PROCESSING-DATA.TEXT}",
+                      "target": "_blank"
+                    }
+                  ]
+                }
+              },
+              "validation": {
+                "messages": {
+                  "pattern": "{$intl: CUSTOMER-MANUAL-ADDRESS.VALIDATION.PATTERN-EIRCODE}"
+                }
+              }
+            }
+          ]
+        },
+            "{$if: store.enterCustomerManaully !== true}",
+            {
+              "key": "enterCustomerManaully",
+              "hideExpression": "model.samePostalAddress === undefined || model.samePostalAddress === true",
+              "content": [
+                {
+                  "type": "div",
+                  "className": "mb-0 mt-2 information-text",
+                  "content": [
+                    {
+                      "type": "text",
+                      "content": "{$intl: ADDRESS-LOOKUP.TEXT.ENTER-ADDRESS-MANUALLY-PRE-TEXT}"
+                    },
+                    {
+                      "className": "underline",
+                      "type": "page-event-button",
+                      "event": "ManualCustomerEntry",
+                      "content": [
+                        "{$intl: ADDRESS-LOOKUP.TEXT.ENTER-ADDRESS-MANUALLY-TEXT}",
+                        {
+                          "type": "image",
+                          "className": "icon-image-sm lm-info-color-filter ml-1",
+                          "src": "@@apiGatewayUrl/@@product/@@client/assets/images/icons/arrow-circle-right-light.svg"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+              "{$if: store.enterCustomerManaully === true}",
+            "{$if: store.enterCustomerEirCode !== true}",
+            {
+              "key": "enterCustomerEirCode",
+              "hideExpression": "model.samePostalAddress === undefined || model.samePostalAddress === true",
+              "content": [
+                {
+                  "type": "div",
+                  "className": "mb-0 mt-2 information-text",
+                  "content": [
+                    {
+                      "type": "text",
+                      "content": "{$intl: ADDRESS-LOOKUP.TEXT.ENTER-EIRCODE-MANUALLY-PRE-TEXT}"
+                    },
+                    {
+                      "className": "data-notice-confirmation",
+                      "type": "page-event-button",
+                      "event": "ManualCustomerEirCode",
+                      "content": [
+                        "{$intl: ADDRESS-LOOKUP.TEXT.ENTER-EIRCODE-MANUALLY-TEXT}",
+                        {
+                          "type": "image",
+                          "className": "icon-image-sm lm-info-color-filter ml-1",
+                          "src": "@@apiGatewayUrl/@@product/@@client/assets/images/icons/arrow-circle-right-light.svg"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "@submit"
+        }
+      ]
+    }
+  },
+  "$schema": "https://gde-digital-sales-core-docs.aws.lmig.com/schema/v1/question.schema.json"
+}
