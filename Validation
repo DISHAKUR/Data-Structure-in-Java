@@ -1,0 +1,7 @@
+"addressLine2": "{$var: model.samePostalAddress:then(store.manualEntry:then(store.address.addressManual.addressLine2, store.address.address.addressLine2), store.manualCustomerEntry:then(store.address.customerAddress.addressLine2, store.address.customerLookupAddress.addressLine2))}",
+
+"city": "{$var: model.samePostalAddress:then(store.manualEntry:then(store.address.addressManual.city, store.address.address.city), store.manualCustomerEntry:then(store.address.customerAddress.city, store.address.customerLookupAddress.city))}",
+
+"countyCode": "{$var: model.samePostalAddress:then(store.manualEntry:then(store.address.addressManual.countyCode, store.address.address.countyCode), store.manualCustomerEntry:then(store.address.customerAddress.countyCode, store.address.customerLookupAddress.countyCode))}",
+
+"eircode": "{$var: model.samePostalAddress:then(store.manualEntry:then(store.address.addressManual.eircode, store.address.address.eircode), store.manualCustomerEntry:then(store.address.customerAddress.eircode, store.address.customerLookupAddress.eircode))}"
