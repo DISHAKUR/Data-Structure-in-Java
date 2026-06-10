@@ -1,0 +1,171 @@
+import { AfterViewInit, Component } from '@angular/core';
+import { StoreService } from '@generali/cinnamon-templating-core';
+import { Next, XStateService } from '@generali/cinnamon-templating-xstate';
+import { Address, FindAddressResponse } from '@shared/components/address-lookup/address-interfaces';
+import { AutoAddressService } from '@shared/components/address-lookup/autoaddress.service';
+import { DataSourceService } from '@shared/services';
+import { ToastService } from '@shared/services/toast/toast.service';
+import { EMPTY } from 'rxjs';
+import { catchError, debounceTime, map, take } from 'rxjs/operators';
+import { FieldWrapper } from '@ngx-formly/core';
+
+/**
+ * A wrapper to find additional data through address lookup service for a given address
+ */
+@Component({
+  selector: 'gde-formly-address-lookup-wrapper',
+  template: `
+    <ng-template #fieldComponent></ng-template>
+
+    <gde-continue-button
+      [hide]="false"
+      btnType="button"
+      (continue)="addressLookup()"
+    ></gde-continue-button>
+  `,
+})
+export class FormlyAddressLookupWrapper extends FieldWrapper implements AfterViewInit{
+  productCode: string;
+  constructor(
+    private stateService: XStateService,
+    private autoAddressService: AutoAddressService,
+    private storeService: StoreService,
+    private toastService: ToastService,
+    private dataSourceService: DataSourceService
+  ) {
+    super();
+    this.productCode = sessionStorage.getItem('product');
+
+    
+  }
+
+  ngAfterViewInit(): void {
+      if(this.productCode && this.productCode === 'redhome'){
+      this.formControl.valueChanges
+      .pipe(debounceTime(500))
+      
+      .subscribe(status => {
+        if(this.formControl.valid){
+          this.addressLookupHome();
+        }
+      })
+    }
+    }
+
+  /**
+   * Call the address lookup service to get the addressId and the matchLevel
+   */
+  addressLookup(): void {
+    this.formControl.markAllAsTouched();
+    if (this.formControl.valid) {
+         let formData = this.form.value['address'];
+      // Add county to the formData
+      const county = this.getCountyName(formData['countyCode']);
+      formData = { ...formData, county };
+      this.autoAddressService
+        .findAddress(this.getAddressStr(formData))
+        .pipe(
+          map((response: FindAddressResponse): Address => {
+            const {
+              matchLevel: { code },
+              addressId,
+            } = response;
+            return { matchLevel: code, addressId, ...formData };
+          }),
+          catchError(() => {
+            // Show a toast notification when a service error occurs
+            this.toastService.showToast('apiError');
+            return EMPTY;
+          })
+        )
+        .subscribe((address) => {
+          // To match the data structure used by auto address lookup and add a flag for manual address entry
+          const addrObj = { address, manualAddressEntry: true, addressConfirmation: true };
+          this.storeService.save(this.to.addressSaveTo || 'address', addrObj);
+        });
+
+      this.stateService.fireStateEvent(Next);
+    }
+  }
+
+  /**
+   * Call the address lookup service to get the addressId and the matchLevel
+   */
+  addressLookupHome(): void {
+    this.formControl.markAllAsTouched();
+    if (this.formControl.valid) {
+      let formData = this.getAddressFormData();
+
+
+      console.log('formData',formData);
+      // Add county to the formData
+      const county = this.getCountyName(formData['countyCode']);
+      formData = { ...formData, county };
+      this.autoAddressService
+        .findAddress(this.getAddressStr(formData))
+        .pipe(
+          map((response: FindAddressResponse): Address => {
+            const {
+              matchLevel: { code },
+              addressId,
+            } = response;
+            return { matchLevel: code, addressId, ...formData };
+          }),
+          catchError(() => {
+            // Show a toast notification when a service error occurs
+            this.toastService.showToast('apiError');
+            return EMPTY;
+          })
+        )
+        .subscribe((address) => {
+          // To match the data structure used by auto address lookup and add a flag for manual address entry
+                const value = this.form.value;
+      const addressKey = value.customerAddressManual ? 'customerAddressManual' : 'addressManual';
+          const addrObj = { address, manualAddressEntry: true, addressConfirmation: true };
+          this.storeService.save(this.to.addressSaveTo || addressKey, addrObj);
+        });
+
+      
+    }
+  }
+
+
+  //for home and bike address key is different, find the object from thisform.value
+
+  private getAddressFormData():any {
+    const value = this.form.value;
+
+    return (
+      value.customerAddressManual || value.addressManual || value.address || this.formControl.value);
+      
+  }
+  /**
+   * get a string of the address from the user input
+   */
+  getAddressStr(addressObj: { [_: string]: string }): string {
+    const address = Object.keys(addressObj)
+      .filter((key) => key !== 'countyCode')
+      .filter((key) => addressObj[key])
+      .map((key) => addressObj[key])
+      .join(',');
+
+    return address;
+  }
+
+  /**
+   * get the county name that matches the county code
+   *
+   * @param countyCode the selected county code
+   */
+  private getCountyName(countyCode: string): string {
+    let county = countyCode;
+    this.dataSourceService
+      .getData('county')
+      .pipe(take(1))
+      .subscribe((option) => {
+        county = option.find((item) => item.value === countyCode).label;
+      });
+
+    return county;
+  }
+}
